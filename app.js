@@ -13,8 +13,10 @@ mongoose.connect(
 
 const productRoutes = require("./api/routes/products");
 const orderRoutes = require("./api/routes/orders");
+const productsImageRoutes = require("./api/routes/productsImage");
 
 app.use(morgan("dev"));
+app.use("/image", express.static("image"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -36,6 +38,7 @@ app.use((request, response, next) => {
 
 app.use("/products", productRoutes);
 app.use("/orders", orderRoutes);
+app.use("/productsImage", productsImageRoutes);
 
 app.use((request, Response, next) => {
   const error = new Error("Resource not found");
