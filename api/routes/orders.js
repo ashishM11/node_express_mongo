@@ -9,7 +9,8 @@ const model_name = "orders";
 router.get("/", (request, response, next) => {
   orderModel
     .find()
-    .select("product_id quantity")
+    .select("product quantity")
+    .populate("product", "productName productBrand")
     .exec()
     .then(docs =>
       responseGenerator.fetchedAllRecords(docs, response, model_name)
@@ -19,12 +20,12 @@ router.get("/", (request, response, next) => {
 
 router.post("/", (request, response, next) => {
   productModel
-    .findById(request.body.productId)
+    .findById(request.body.product)
     .then(result => {
       if (result !== null) {
         const orderObj = new orderModel({
           _id: new mongoose.Types.ObjectId(),
-          product_id: request.body.productId,
+          product: request.body.product,
           quantity: request.body.productQuantity
         });
         return orderObj.save();
@@ -44,6 +45,7 @@ router.get("/:orderId", (request, response, next) => {
   if (request.params.orderId) {
     orderModel
       .findById(request.params.orderId)
+      .populate("product", "productName productBrand")
       .exec()
       .then(resultObj => responseGenerator.fetchById(resultObj, response))
       .catch(err => responseGenerator.handleErrorReceived(err, response));

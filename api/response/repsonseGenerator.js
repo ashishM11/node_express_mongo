@@ -16,7 +16,7 @@ module.exports = {
   fetchById: (result, response) => {
     if (result) {
       response.status(200).json({
-        order: result
+        result
       });
     } else {
       response.status(404).json({
