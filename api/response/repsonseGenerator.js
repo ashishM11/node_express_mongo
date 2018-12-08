@@ -5,9 +5,11 @@ module.exports = {
         message: "Oops No records found in database"
       });
     } else if (docs.length > 0) {
+      let documents = {};
+      documents[model_name] = docs;
       response.status(200).json({
         totRecords: docs.length,
-        model_name: docs
+        documents
       });
     }
   },

@@ -4,7 +4,7 @@ const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 let mongoAtlasURL =
-  "mongodb+srv://ashishMongo:<PASSWORD>@mongo-cloud-pracs-myied.mongodb.net/test?retryWrites=true";
+  "mongodb+srv://ashishMongo:<PASSWORD>@mongo-cloud-pracs-myied.mongodb.net/retail_store?retryWrites=true";
 
 mongoose.connect(
   mongoAtlasURL.replace("<PASSWORD>", process.env.MONGO_ATLAS_Pw),

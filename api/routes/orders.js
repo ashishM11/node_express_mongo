@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const orderModel = require("../models/ordersModel");
+const productModel = require("../models/productModel");
 const responseGenerator = require("../response/repsonseGenerator");
 const model_name = "orders";
 
@@ -17,19 +18,26 @@ router.get("/", (request, response, next) => {
 });
 
 router.post("/", (request, response, next) => {
-  const orderObj = new orderModel({
-    _id: new mongoose.Types.ObjectId(),
-    product_id: request.body.productId,
-    quantity: request.body.productQuantity
-  });
-  const res = orderObj
-    .save()
+  productModel
+    .findById(request.body.productId)
+    .then(result => {
+      if (result !== null) {
+        const orderObj = new orderModel({
+          _id: new mongoose.Types.ObjectId(),
+          product_id: request.body.productId,
+          quantity: request.body.productQuantity
+        });
+        return orderObj.save();
+      } else {
+        response.status(404).json({
+          message: "Sorry, order cannot be placed, since no such product found."
+        });
+      }
+    })
     .then(result =>
       responseGenerator.postRequestResponse(result, response, model_name)
     )
     .catch(err => responseGenerator.handleErrorReceived(err, response));
-
-  console.log(res);
 });
 
 router.get("/:orderId", (request, response, next) => {
