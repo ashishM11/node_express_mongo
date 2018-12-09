@@ -5,6 +5,7 @@ const productsImageModel = require("../models/productsImageModel");
 const productModel = require("../models/productModel");
 const responseGenerator = require("../response/repsonseGenerator");
 const model_name = "productsImage";
+const checkAuth = require("../middleware/check-auth");
 const multer = require("multer");
 const storage = multer.diskStorage({
   destination: (request, file, next) => {
@@ -32,32 +33,37 @@ const images = multer({
   fileFilter: fileFilter
 });
 
-router.post("/", images.single("productImage"), (request, response, next) => {
-  console.log(request.file);
-  productModel
-    .findById(request.body.product)
-    .then(result => {
-      if (result !== null) {
-        const productsImageObj = new productsImageModel({
-          _id: new mongoose.Types.ObjectId(),
-          product: request.body.product,
-          filepath: request.file.path,
-          filename: request.file.filename
-        });
-        return productsImageObj.save();
-      } else {
-        response.status(404).json({
-          message: "Sorry, product image cannot be saved."
-        });
-      }
-    })
-    .then(result => {
-      console.log(result);
-      responseGenerator.postRequestResponse(result, response, model_name);
-    })
-    .catch(err => responseGenerator.handleErrorReceived(err, response));
-});
-router.get("/", (request, response, next) => {
+router.post(
+  "/",
+  checkAuth,
+  images.single("productImage"),
+  (request, response, next) => {
+    console.log(request.file);
+    productModel
+      .findById(request.body.product)
+      .then(result => {
+        if (result !== null) {
+          const productsImageObj = new productsImageModel({
+            _id: new mongoose.Types.ObjectId(),
+            product: request.body.product,
+            filepath: request.file.path,
+            filename: request.file.filename
+          });
+          return productsImageObj.save();
+        } else {
+          response.status(404).json({
+            message: "Sorry, product image cannot be saved."
+          });
+        }
+      })
+      .then(result => {
+        console.log(result);
+        responseGenerator.postRequestResponse(result, response, model_name);
+      })
+      .catch(err => responseGenerator.handleErrorReceived(err, response));
+  }
+);
+router.get("/", checkAuth, (request, response, next) => {
   productsImageModel
     .find()
     .select("product filepath filename")
@@ -68,7 +74,7 @@ router.get("/", (request, response, next) => {
     )
     .catch(err => responseGenerator.handleErrorReceived(err, response));
 });
-router.get("/:productsImageId", (request, response, next) => {
+router.get("/:productsImageId", checkAuth, (request, response, next) => {
   if (request.params.productsImageId) {
     productsImageModel
       .findById(request.params.productsImageId)

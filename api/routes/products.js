@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const productModel = require("../models/productModel");
+const checkAuth = require("../middleware/check-auth");
 const responseGenerator = require("../response/repsonseGenerator");
 const model_name = "products";
 
@@ -16,7 +17,7 @@ router.get("/", (request, response, next) => {
     .catch(err => responseGenerator.handleErrorReceived(err, response));
 });
 
-router.post("/", (request, response, next) => {
+router.post("/", checkAuth, (request, response, next) => {
   const productObj = new productModel({
     _id: new mongoose.Types.ObjectId(),
     productName: request.body.productName,
