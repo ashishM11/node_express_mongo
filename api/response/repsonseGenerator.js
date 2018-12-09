@@ -53,12 +53,12 @@ module.exports = {
   deletedById: (result, response, model_name, deleted_Id) => {
     if (result.n > 0) {
       response.status(200).json({
-        message: `${model_name} id : ${deleted_Id} is deleted.`,
+        message: `${model_name} id: ${deleted_Id} is deleted.`,
         result: result
       });
     } else {
       response.status(404).json({
-        message: `${model_name} id : ${deleted_Id} not found.`
+        message: `${model_name} id: ${deleted_Id} not found.`
       });
     }
   },
@@ -66,5 +66,17 @@ module.exports = {
     response.status(500).json({
       message: error.message
     });
+  },
+  sendCustomMessage: (code, message, response, token) => {
+    if (token) {
+      response.status(code).json({
+        message: message,
+        token
+      });
+    } else {
+      response.status(code).json({
+        message: message
+      });
+    }
   }
 };
